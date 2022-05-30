@@ -77,47 +77,39 @@ def scrape():
     fact_table.replace('\n','')
 
     ### Mars Hemispheres
+
     #url for Mars' Hemispheres
-    hems_url = 'https://marshemispheres.com/'
+    url = 'https://marshemispheres.com/'
+    
+    # # open the url
+    browser.visit(url)
 
-    # open the jpl_url
-    browser.visit(hems_url)
-
-    # Let it sleep for 1 second
     time.sleep(1)
 
-    # scrape page into Soup
-    html = browser.html
-    soup = bs(html, "html.parser")
-
-    # read to html and extract image urls
-    hems_data = soup.find_all("div", class_="item")
-
+    # new list to hold titles and images
     hemisphere_img_urls = []
 
     # loop through the data to find title and url info
-    for image in hems_data:
-    
-        title = image.find("h3").text
-    
-        img_url = image.a["href"]
-    
-        url = hems_url + img_url
-    
-        # use requests to get full images url 
-        response = requests.get(url)
-    
-        # create soup object
-        soup = bs(response.text,"html.parser")
-        
-        # find full image url
-        new_url = soup.find("img", class_="wide-image")["src"]
-        
-        # create full image url
-        full_url = "https://marshemispheres.com/" + new_url
-    
-        # create a dictionary and append to the list before the loop
-        hemisphere_img_urls.append({"title": title, "img_url": full_url})
+    for item in range(4):
+        # browse through each article
+        browser.links.find_by_partial_text('Hemisphere')[item].click()
+
+        # parse the HTML
+        html = browser.html
+        hemi_soup = bs(html,'html.parser')
+
+        # scraping
+        title = hemi_soup.find('h2', class_='title').text
+        img_url = hemi_soup.find('li').a.get('href')
+
+        # store findings into a dictionary and append to list
+        hemispheres = {}
+        hemispheres['img_url'] = f'https://marshemispheres.com/{img_url}'
+        hemispheres['title'] = title
+        hemisphere_img_urls.append(hemispheres)
+
+        # browse back to repeat
+        browser.back()
 
     # create mars data dictionary to hold above scraped data
     mars_data = {
@@ -133,4 +125,3 @@ def scrape():
 
     # return our dictionary
     return mars_data
-#
