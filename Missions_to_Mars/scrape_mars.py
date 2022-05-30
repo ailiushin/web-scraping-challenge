@@ -95,29 +95,29 @@ def scrape():
 
     hemisphere_img_urls = []
 
-    # # loop through the data to find title and url info
-    # for image in hems_data:
+    # loop through the data to find title and url info
+    for image in hems_data:
     
-    #     title = image.find("h3").text
+        title = image.find("h3").text
     
-    #     img_url = image.a["href"]
+        img_url = image.a["href"]
     
-    #     url = hems_url + img_url
+        url = hems_url + img_url
     
-    #     # use requests to get full images url 
-    #     response = requests.get(url)
+        # use requests to get full images url 
+        response = requests.get(url)
     
-    #     # create soup object
-    #     soup = bs(response.text,"html.parser")
+        # create soup object
+        soup = bs(response.text,"html.parser")
+        
+        # find full image url
+        new_url = soup.find("img", class_="wide-image")["src"]
+        
+        # create full image url
+        full_url = "https://marshemispheres.com/" + new_url
     
-    #     # find full image url
-    #     new_url = soup.find("img", class_="wide-image")["src"]
-    
-    #     # create full image url
-    #     full_url = "https://marshemispheres.com/" + new_url
-    
-    #     # create a dictionary and append to the list before the loop
-    #     hemisphere_img_urls.append({"title": title, "img_url": full_url})
+        # create a dictionary and append to the list before the loop
+        hemisphere_img_urls.append({"title": title, "img_url": full_url})
 
     # create mars data dictionary to hold above scraped data
     mars_data = {
@@ -125,12 +125,12 @@ def scrape():
         "paragraph" : news_p,
         "featured_image_url": image,
         "html_table": fact_table,
-        
-    }
+        "hemisphere_img_urls": hemisphere_img_urls
+        }
 
     # close the browser after scraping
     browser.quit()
 
     # return our dictionary
     return mars_data
-#"hemisphere_img_urls": hemisphere_img_urls
+#
